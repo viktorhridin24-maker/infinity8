@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Infinity8 AI</title>
-    <!-- Подключение шрифтов и иконок -->
+    <title>Infinity8 AI - Powered by Firebase</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -16,202 +15,197 @@
         }
 
         body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0; padding: 0; height: 100%;
+            font-family: 'Segoe UI', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             overflow: hidden;
         }
 
-        /* Эффект свечения краев */
         .glow-active {
-            box-shadow: inset 0 0 20px var(--accent-glow), 0 0 15px var(--accent-glow);
-            transition: box-shadow 0.5s ease-in-out;
+            box-shadow: inset 0 0 30px var(--accent-glow);
+            transition: box-shadow 0.4s ease-in-out;
         }
 
         .container {
-            display: flex;
-            height: 100vh;
-            border: 2px solid transparent; /* Для свечения */
+            display: flex; height: 100vh;
+            border: 2px solid transparent;
         }
 
-        /* Боковая панель (История) */
+        /* Sidebar */
         .sidebar {
-            width: 260px;
+            width: 280px;
             background-color: var(--sidebar-color);
-            display: flex;
-            flex-direction: column;
-            padding: 15px;
-            border-right: 1px solid #30363d;
+            display: flex; flex-direction: column;
+            padding: 15px; border-right: 1px solid #30363d;
+        }
+
+        .logo-area {
+            display: flex; align-items: center; gap: 10px; margin-bottom: 20px;
+        }
+
+        .logo-area img {
+            width: 40px; height: 40px; border-radius: 50%;
         }
 
         .new-chat-btn {
-            border: 1px solid #30363d;
-            background: transparent;
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: background 0.3s;
+            background: #21262d; color: white; border: 1px solid #30363d;
+            padding: 12px; border-radius: 8px; cursor: pointer;
+            width: 100%; text-align: left; transition: 0.3s;
         }
 
-        .new-chat-btn:hover {
-            background-color: #21262d;
+        .new-chat-btn:hover { background: #30363d; }
+
+        .chat-history { flex-grow: 1; overflow-y: auto; margin-top: 20px; }
+
+        .history-item {
+            padding: 10px; font-size: 14px; border-radius: 5px;
+            cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
 
-        .chat-history {
-            flex-grow: 1;
-            margin-top: 20px;
-            overflow-y: auto;
-        }
+        .history-item:hover { background: #161b22; }
 
-        /* Основная область чата */
-        .main-chat {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
+        /* Chat Area */
+        .main-chat { flex-grow: 1; display: flex; flex-direction: column; position: relative; }
 
         .chat-messages {
-            flex-grow: 1;
-            padding: 40px 20% 100px 20%;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+            flex-grow: 1; padding: 20px 15%; overflow-y: auto;
+            display: flex; flex-direction: column; gap: 25px;
         }
 
-        .message {
-            max-width: 800px;
-            line-height: 1.6;
+        .message { max-width: 850px; margin-bottom: 10px; }
+        .message.user { color: #8b949e; }
+        .message.ai { border-left: 2px solid var(--accent-glow); padding-left: 15px; }
+
+        .input-wrapper {
+            padding: 20px 15% 40px 15%;
+            background: linear-gradient(transparent, var(--bg-color) 20%);
         }
 
-        /* Поле ввода */
         .input-area {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60%;
             background-color: var(--input-bg);
-            border: 1px solid #30363d;
-            border-radius: 15px;
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            border: 1px solid #444c56; border-radius: 12px;
+            padding: 12px 20px; display: flex; align-items: center; gap: 15px;
         }
 
         input {
-            background: transparent;
-            border: none;
-            color: white;
-            flex-grow: 1;
-            outline: none;
-            font-size: 16px;
+            background: transparent; border: none; color: white;
+            flex-grow: 1; outline: none; font-size: 16px;
         }
 
-        .controls {
-            display: flex;
-            gap: 15px;
-            color: #8b949e;
-        }
-
-        .controls i:hover {
-            color: var(--accent-glow);
-            cursor: pointer;
-        }
+        .controls i { color: #8b949e; cursor: pointer; transition: 0.2s; }
+        .controls i:hover { color: var(--accent-glow); }
     </style>
 </head>
 <body>
 
     <div class="container" id="appContainer">
-        <!-- Сайдбар -->
         <div class="sidebar">
+            <div class="logo-area">
+                <img src="инфинити 8 ии.png" alt="Infinity8 Logo">
+                <span style="font-weight: bold; font-size: 20px;">Infinity8</span>
+            </div>
             <button class="new-chat-btn" onclick="startNewChat()">
                 <i class="fas fa-plus"></i> Новый чат
             </button>
-            <div class="chat-history" id="history">
-                <p style="font-size: 12px; color: #8b949e;">История чатов появится здесь...</p>
-            </div>
-            <!-- Ссылка на Codelium -->
-            <div style="margin-top: auto; padding-top: 10px; border-top: 1px solid #30363d;">
-                <a href="https://codelium.com/" target="_blank" style="color: #58a6ff; text-decoration: none; font-size: 14px;">
-                    <i class="fas fa-code"></i> Powered by Codelium
+            <div class="chat-history" id="historyList"></div>
+            
+            <div style="margin-top: auto; font-size: 13px;">
+                <a href="https://codelium.com/" target="_blank" style="color: #58a6ff; text-decoration: none;">
+                    <i class="fas fa-terminal"></i> Codelium AI Engine
                 </a>
             </div>
         </div>
 
-        <!-- Основной экран -->
         <div class="main-chat">
-            <div class="chat-messages" id="messages">
-                <div class="message">
-                    <h3>Infinity8</h3>
-                    <p>Привет, Виктор! Чем я могу помочь сегодня? Я умею писать код, создавать изображения и видео.</p>
-                </div>
+            <div class="chat-messages" id="chatBox">
+                <!-- Сообщения будут здесь -->
             </div>
 
-            <div class="input-area">
-                <input type="text" placeholder="Спросите Infinity8..." id="userInput">
-                <div class="controls">
-                    <i class="fas fa-image" title="Создать фото"></i>
-                    <i class="fas fa-video" title="Создать видео"></i>
-                    <i class="fas fa-paper-plane" onclick="sendMessage()"></i>
+            <div class="input-wrapper">
+                <div class="input-area">
+                    <input type="text" id="userInput" placeholder="Сообщение для Infinity8...">
+                    <div class="controls">
+                        <i class="fas fa-magic" title="Codelium Optimization"></i>
+                        <i class="fas fa-camera" title="Generate Image"></i>
+                        <i class="fas fa-paper-plane" id="sendBtn"></i>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script>
-        function startNewChat() {
-            const container = document.getElementById('appContainer');
-            const messages = document.getElementById('messages');
-            
-            // Очистка сообщений
-            messages.innerHTML = '';
-            
-            // Эффект свечения краев
-            container.classList.add('glow-active');
-            setTimeout(() => {
-                container.classList.remove('glow-active');
-            }, 1500);
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } 
+        from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
-            // Добавление системного приветствия
-            messages.innerHTML = `<div class="message"><h3>Infinity8</h3><p>Новый чат начат. Готов к работе!</p></div>`;
-        }
+        const firebaseConfig = {
+            apiKey: "AIzaSyDQiUup4Sr3QSDEJ0Ql9_LgkrmLDX7S2X8",
+            authDomain: "infinityeight-1702c.firebaseapp.com",
+            projectId: "infinityeight-1702c",
+            storageBucket: "infinityeight-1702c.firebasestorage.app",
+            messagingSenderId: "275832051861",
+            appId: "1:275832051861:web:0d72848a1e688a0640239c"
+        };
 
-        function sendMessage() {
-            const input = document.getElementById('userInput');
-            const messages = document.getElementById('messages');
-            
-            if (input.value.trim() !== "") {
-                const userMsg = document.createElement('div');
-                userMsg.className = 'message';
-                userMsg.innerHTML = `<h3>Вы</h3><p>${input.value}</p>`;
-                messages.appendChild(userMsg);
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const chatBox = document.getElementById('chatBox');
+        const historyList = document.getElementById('historyList');
+
+        // Функция отправки сообщения в Firebase
+        async function sendMessage() {
+            const text = document.getElementById('userInput').value;
+            if (!text.trim()) return;
+
+            document.getElementById('userInput').value = "";
+
+            try {
+                await addDoc(collection(db, "messages"), {
+                    text: text,
+                    sender: "user",
+                    timestamp: serverTimestamp()
+                });
                 
-                input.value = "";
-                messages.scrollTop = messages.scrollHeight;
-                
-                // Здесь будет логика вызова API для Infinity8
+                // Имитация ответа ИИ
+                setTimeout(async () => {
+                    await addDoc(collection(db, "messages"), {
+                        text: "Я получил твой запрос. Интегрирую Codelium для анализа...",
+                        sender: "ai",
+                        timestamp: serverTimestamp()
+                    });
+                }, 1000);
+
+            } catch (e) {
+                console.error("Ошибка Firebase: ", e);
             }
         }
 
-        // Обработка Enter
-        document.getElementById('userInput').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
+        // Слушатель сообщений в реальном времени
+        const q = query(collection(db, "messages"), orderBy("timestamp", "asc"));
+        onSnapshot(q, (snapshot) => {
+            chatBox.innerHTML = "";
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                const div = document.createElement('div');
+                div.className = `message ${data.sender}`;
+                div.innerHTML = `<strong>${data.sender === 'user' ? 'Вы' : 'Infinity8'}</strong><p>${data.text}</p>`;
+                chatBox.appendChild(div);
+            });
+            chatBox.scrollTop = chatBox.scrollHeight;
         });
-    </script>
 
-    <!-- Интеграция Codelium (виджет или скрипт, если предусмотрено их API) -->
-    <script src="https://codelium.com/embed.js" async></script>
+        window.startNewChat = () => {
+            const container = document.getElementById('appContainer');
+            container.classList.add('glow-active');
+            setTimeout(() => container.classList.remove('glow-active'), 1500);
+            chatBox.innerHTML = '<div class="message ai"><strong>Infinity8</strong><p>Контекст очищен. Начнем заново!</p></div>';
+        };
+
+        document.getElementById('sendBtn').onclick = sendMessage;
+        document.getElementById('userInput').onkeypress = (e) => { if(e.key === 'Enter') sendMessage(); };
+    </script>
 </body>
 </html>
